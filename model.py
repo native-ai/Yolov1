@@ -42,7 +42,7 @@ class Yolov1(nn.Module):
         self.fcs = self.create_fcs(**kwargs)
         
     def forward(self, x):
-        x = self.darknet
+        x = self.darknet(x)
         return self.fcs(torch.flatten(x, start_dim = 1))
     
     def create_conv_layers(self, architecture):
