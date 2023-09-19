@@ -52,7 +52,7 @@ class Yolov1(nn.Module):
         for x in architecture:
             if type(x) == tuple:
                 layers += [
-                    CNNBlock(in_channels, x[1], kernel_size = x[0] stride = x[2], padding = x[3])
+                    CNNBlock(in_channels, x[1], kernel_size = x[0], stride = x[2], padding = x[3])
                 ]
                 
                 in_channels = x[1]
