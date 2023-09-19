@@ -65,7 +65,7 @@ class Yolov1(nn.Module):
             elif type(x) == list:
                 first_conv = x[0]
                 second_conv = x[1]
-                num_repeats = x[3]
+                num_repeats = x[2]
                 
                 for _ in range(num_repeats):
                     layers += [
@@ -86,7 +86,7 @@ class Yolov1(nn.Module):
         return nn.Sequential(
             nn.Flatten(),
             nn.Linear(1024 * S * S, 496),
-            # nn.Dropout(0.0), 
+            nn.Dropout(0.0),
             nn.LeakyReLU(0.1),
             nn.Linear(496, S * S * (C + B * 5))
         )
