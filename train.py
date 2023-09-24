@@ -64,7 +64,7 @@ def train_step(train_dataloader, model, optimizer, loss_fn):
             optimizer.step()
 
             loop.set_postfix(loss = loss.item())
-    print(f"Mean Loss was {sum(mean_loss)/len(mean_loss)}")
+    print(f"\nMean Loss was {sum(mean_loss)/len(mean_loss)}")
 
 def main():
     model = Yolov1(split_size = SPLIT_SIZE, num_boxes = 2, num_classes = NUM_CLASSES).to(DEVICE)
@@ -75,16 +75,16 @@ def main():
         load_checkpoint(torch.load(LOAD_MODEL_FILE), model, optimizer)
 
     train_dataset = VOCDataset(csv_file = CSV_FILE, img_dir = IMG_DIR, label_dir = LABEL_DIR, transform = transform)
-    test_dataset = VOCDataset(csv_file = CSV_FILE, img_dir = IMG_DIR, label_dir = LABEL_DIR, transform = transform)
+    test_dataset = VOCDataset(csv_file = "data/test.csv", img_dir = IMG_DIR, label_dir = LABEL_DIR, transform = transform)
 
     train_dataloader = DataLoader(dataset = train_dataset, batch_size = BATCH_SIZE, num_workers = NUM_WORKERS, pin_memory = PIN_MEMORY, shuffle = True, drop_last = True)
     test_dataloader = DataLoader(dataset = test_dataset, batch_size = BATCH_SIZE, num_workers = NUM_WORKERS, pin_memory = PIN_MEMORY, shuffle = True, drop_last = True)
 
     for epoch in tqdm(range(EPOCHS)):
         pred_boxes, target_boxes = get_bboxes(train_dataloader, model, iou_threshold = NMS_IOU_THRESH, threshold = CONF_THRESH)
+        map = mean_average_precision(pred_boxes, target_boxes, iou_threshold = MAP_IOU_THRESH, box_format = "midpoint")
+        print(f"\nTrain mAP: {map}")
         train_step(train_dataloader, model, optimizer, loss_fn)
-        mean_average_precision = mean_average_precision(pred_boxes, target_boxes, iou_threshold = MAP_IOU_THRESH, box_format = "midpoint")
-        print(f"Train mAP: {mean_average_precision}")
 
 
 
